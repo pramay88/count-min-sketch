@@ -24,8 +24,5 @@ private:
 
     std::vector<std::uint64_t> seeds_;
 
-    std::uint64_t hash(
-        std::string_view key,
-        std::uint64_t seed
-    ) const;
+    std::uint64_t hash(std::string_view key, std::uint64_t seed) const;
 };

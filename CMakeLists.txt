@@ -25,3 +25,6 @@ add_executable(cms_example
 target_link_libraries(cms_example
     PRIVATE cms
 )
+
+enable_testing()
+add_subdirectory(test)

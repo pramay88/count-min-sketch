@@ -1,28 +1,61 @@
+# =========================
+# Build directories
+# =========================
 build/
 cmake-build-*/
+_build/
 
-# IDE / Editor
+# =========================
+# Compiled binaries
+# =========================
+a.out
+*.out
+*.o
+*.obj
+*.so
+*.dylib
+*.dll
+*.exe
+*.a
+*.lib
+
+# =========================
+# CMake generated files
+# =========================
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+compile_commands.json
+CTestTestfile.cmake
+install_manifest.txt
+
+# =========================
+# Testing / coverage
+# =========================
+Testing/
+*.gcda
+*.gcno
+*.gcov
+
+# =========================
+# IDE / editor files
+# =========================
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
+.DS_Store
 
-# Compiled binaries / libs
-*.o
-*.obj
-*.a
-*.so
-*.so.*
-*.dll
-*.dylib
-*.exe
+# =========================
+# OS files
+# =========================
+Thumbs.db
 
-
-# CMake generated files
-CMakeCache.txt
-CMakeFiles/
-cmake_install.cmake
-Makefile
-install_manifest.txt
-compile_commands.json
+# =========================
+# Logs / temporary files
+# =========================
+*.log
+*.tmp
+*.temp

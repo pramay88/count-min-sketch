@@ -22,6 +22,7 @@ CountMinSketch::CountMinSketch(std::size_t width, std::size_t depth)
 }
 
 std::uint64_t CountMinSketch::hash(std::string_view key, std::uint64_t seed) const {
+    // 14695981039346656037ULL - FNV-1a 64-bit offset basis
     std::uint64_t h = 14695981039346656037ULL ^ seed;
 
     for (unsigned char c : key) {

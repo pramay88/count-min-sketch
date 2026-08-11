@@ -31,8 +31,8 @@ struct Result {
 };
 
 std::uint64_t parse_n(int argc, char* argv[]) {
-    if (argc > 3) {
-        throw std::runtime_error("Usage: cms_test [N] [WIDTH]");
+    if (argc > 4) {
+        throw std::runtime_error("Usage: cms_test [N] [WIDTH] [DISTRIBUTION]");
     }
 
     if (argc == 1) {
@@ -62,6 +62,23 @@ std::size_t parse_width(int argc, char* argv[]) {
     return static_cast<std::size_t>(width);
 }
 
+std::string parse_distribution(int argc, char* argv[]) {
+    if (argc < 4) {
+        return "uniform";
+    }
+
+    const std::string distribution = argv[3];
+
+    if (distribution != "uniform" && distribution != "geometric") {
+        throw std::runtime_error(
+            "DISTRIBUTION must be 'uniform' or 'geometric'"
+        );
+    }
+
+    return distribution;
+}
+
+// Generates uniform stream
 Counts generate_uniform_stream(CountMinSketch& cms, std::uint64_t n) {
     Counts exact;
     exact.reserve(KEY_RANGE);
@@ -71,6 +88,28 @@ Counts generate_uniform_stream(CountMinSketch& cms, std::uint64_t n) {
 
     for (std::uint64_t i = 0; i < n; ++i) {
         const auto value = rng() % KEY_RANGE;
+        const std::string key = std::to_string(value);
+
+        ++exact[key];
+        cms.update(key);
+    }
+
+    return exact;
+}
+
+// Generates geometrically distributed (skewed) data - realistic
+Counts generate_geometric_stream(CountMinSketch& cms, std::uint64_t n) {
+    Counts exact;
+    exact.reserve(KEY_RANGE);
+
+    std::mt19937_64 rng(SEED);
+
+    // Geometric distribution with p = 0.001,
+    // strongly skewed toward lower key values.
+    std::geometric_distribution<std::uint64_t> geometric_dist(0.001);
+
+    for (std::uint64_t i = 0; i < n; ++i) {
+        const auto value = geometric_dist(rng) % KEY_RANGE;
         const std::string key = std::to_string(value);
 
         ++exact[key];
@@ -195,10 +234,19 @@ int main(int argc, char* argv[]) {
     try {
         const auto n = parse_n(argc, argv);
         const auto width = parse_width(argc, argv);
+        const auto distribution = parse_distribution(argc, argv);
 
         CountMinSketch cms(width, DEPTH);
 
-        const auto exact = generate_uniform_stream(cms, n);
+        Counts exact;
+
+        if (distribution == "uniform") {
+            exact = generate_uniform_stream(cms, n);
+        } else if (distribution == "geometric") {
+            exact = generate_geometric_stream(cms, n);
+        } else {
+            throw std::runtime_error("Unknown distribution: " + distribution);
+        }
 
         const auto result = compare(cms, exact);
 
